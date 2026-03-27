@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f0f12">
+<meta name="description" content="365 Days of Custom n8n Node Development by Christechva">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="n8n.edu">
+<link rel="manifest" id="manifest-placeholder">
+<title>Christechva · n8n Node Mastery 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — 2026 n8n Reddish System
+   ============================================================ */
+:root {
+  /* Colors */
+  --bg-base:       #0a0a0d;
+  --bg-surface:    #111117;
+  --bg-elevated:   #18181f;
+  --bg-overlay:    #1f1f28;
+  --border:        rgba(255,255,255,0.07);
+  --border-active: rgba(234,67,53,0.45);
+
+  /* Brand gradient */
+  --brand-start:   #ea4335;
+  --brand-mid:     #c62828;
+  --brand-end:     #7b1fa2;
+  --brand-glow:    rgba(234,67,53,0.18);
+  --grad:          linear-gradient(135deg, #ea4335 0%, #c62828 55%, #7b1fa2 100%);
+  --grad-subtle:   linear-gradient(135deg, rgba(234,67,53,0.15) 0%, rgba(123,31,162,0.12) 100%);
+
+  /* Text */
+  --text-primary:  #f0f0f5;
+  --text-secondary:#9999b0;
+  --text-muted:    #55556a;
+  --text-brand:    #f05454;
+
+  /* Spacing (8px grid) */
+  --s1: 8px;   --s2: 16px;  --s3: 24px;
+  --s4: 32px;  --s5: 40px;  --s6: 48px;
+
+  /* Typography */
+  --font-head:   'Space Grotesk', sans-serif;
+  --font-body:   'JetBrains Mono', monospace;
+  --fs-sm:       11px;
+  --fs-body:     13px;
+  --fs-head:     18px;
+  --fs-xl:       28px;
+
+  /* Shadows (Apple-style) */
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.25);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.3);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35);
+  --shadow-glow: 0 0 20px rgba(234,67,53,0.25), 0 4px 16px rgba(0,0,0,0.5);
+
+  /* Nav */
+  --nav-h: 68px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  background:var(--bg-base);
+  color:var(--text-primary);
+  min-height:100vh;
+  overflow-x:hidden;
+  padding-bottom:var(--nav-h);
+}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit}
+input,select,textarea{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+::selection{background:rgba(234,67,53,0.35);color:#fff}
+
+/* Focus rings */
+*:focus-visible{
+  outline:2px solid var(--brand-start);
+  outline-offset:3px;
+  border-radius:4px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page{display:none;flex-direction:column;min-height:calc(100vh - var(--nav-h));animation:fadeIn .25s ease}
+.page.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.container{max-width:680px;margin:0 auto;padding:0 var(--s2);width:100%}
+
+/* ============================================================
+   TOP HEADER
+   ============================================================ */
+.app-header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,13,0.88);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  padding:var(--s2) var(--s2) var(--s1);
+}
+.header-inner{
+  max-width:680px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s1);
+}
+.brand{
+  display:flex;align-items:center;gap:var(--s1);
+  font-family:var(--font-head);font-weight:700;font-size:var(--fs-head);
+}
+.brand-icon{
+  width:32px;height:32px;border-radius:var(--radius-sm);
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;box-shadow:var(--shadow-glow);
+  flex-shrink:0;
+}
+.brand-name{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header-actions{display:flex;gap:var(--s1)}
+.icon-btn{
+  width:36px;height:44px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-secondary);background:transparent;
+  transition:var(--transition);
+}
+.icon-btn:hover{background:var(--bg-elevated);color:var(--text-primary)}
+
+/* ============================================================
+   SEARCH BAR
+   ============================================================ */
+.search-wrap{
+  max-width:680px;margin:0 auto;
+  padding:var(--s2) var(--s2) 0;
+}
+.search-box{
+  position:relative;display:flex;align-items:center;
+}
+.search-box svg{
+  position:absolute;left:var(--s2);color:var(--text-muted);
+  pointer-events:none;flex-shrink:0;
+}
+.search-input{
+  width:100%;height:44px;
+  padding:0 var(--s2) 0 44px;
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  color:var(--text-primary);
+  font-size:var(--fs-body);
+  transition:var(--transition);
+}
+.search-input::placeholder{color:var(--text-muted)}
+.search-input:focus{border-color:var(--border-active);background:var(--bg-overlay);outline:none}
+.search-input:focus+.search-glow{opacity:1}
+.search-glow{
+  position:absolute;inset:0;border-radius:var(--radius-md);
+  box-shadow:0 0 0 2px rgba(234,67,53,0.25);
+  pointer-events:none;opacity:0;transition:var(--transition);
+}
+
+/* ============================================================
+   FILTER CHIPS
+   ============================================================ */
+.filter-row{
+  display:flex;gap:var(--s1);overflow-x:auto;
+  padding:var(--s2) var(--s2) 0;
+  max-width:680px;margin:0 auto;
+  scrollbar-width:none;
+}
+.filter-row::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0;height:32px;padding:0 var(--s2);
+  border-radius:100px;border:1px solid var(--border);
+  background:var(--bg-elevated);color:var(--text-secondary);
+  font-size:var(--fs-sm);font-family:var(--font-head);font-weight:500;
+  white-space:nowrap;transition:var(--transition);
+  display:flex;align-items:center;
+}
+.chip:hover{border-color:rgba(234,67,53,0.3);color:var(--text-primary)}
+.chip.active{
+  background:var(--grad);color:#fff;
+  border-color:transparent;box-shadow:var(--shadow-glow);
+}
+
+/* ============================================================
+   DASHBOARD PAGE
+   ============================================================ */
+.dash-hero{
+  padding:var(--s3) var(--s2) var(--s2);
+  max-width:680px;margin:0 auto;width:100%;
+}
+.streak-card{
+  background:var(--bg-surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-xl);
+  padding:var(--s3);
+  box-shadow:var(--shadow-md);
+  position:relative;overflow:hidden;
+}
+.streak-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--grad);
+}
+.streak-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s2)}
+.streak-label{
+  font-family:var(--font-head);font-size:var(--fs-sm);
+  font-weight:600;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;
+}
+.streak-num{
+  font-family:var(--font-head);font-size:var(--fs-xl);
+  font-weight:700;background:var(--grad);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;
+}
+.streak-sub{font-size:var(--fs-sm);color:var(--text-muted);margin-top:2px}
+.progress-bar-wrap{
+  background:rgba(255,255,255,0.05);
+  border-radius:100px;height:6px;overflow:hidden;margin-top:var(--s2);
+}
+.progress-bar-fill{
+  height:100%;border-radius:100px;
+  background:var(--grad);transition:width .6s cubic-bezier(.4,0,.2,1);
+}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);
+  margin-top:var(--s2);
+}
+.stat-tile{
+  background:var(--bg-elevated);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:var(--s2);
+  text-align:center;box-shadow:var(--shadow-sm);
+}
+.stat-val{
+  font-family:var(--font-head);font-size:var(--fs-head);
+  font-weight:700;color:var(--text-brand);
+}
+.stat-lbl{font-size:var(--fs-sm);color:var(--text-muted);margin-top:2px}
+
+/* Recent posts section */
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--s3) var(--s2) var(--s1);
+  max-width:680px;margin:0 auto;width:100%;
+}
+.section-title{
+  font-family:var(--font-head);font-size:var(--fs-head);font-weight:700;
+}
+.see-all-btn{
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:600;
+  color:var(--text-brand);padding:var(--s1) var(--s2);
+  min-height:44px;display:flex;align-items:center;
+  border-radius:var(--radius-sm);transition:var(--transition);
+}
+.see-all-btn:hover{background:var(--brand-glow)}
+
+/* ============================================================
+   POST CARDS
+   ============================================================ */
+.posts-list{
+  display:flex;flex-direction:column;gap:var(--s2);
+  padding:0 var(--s2) var(--s3);
+  max-width:680px;margin:0 auto;width:100%;
+}
+.post-card{
+  background:var(--bg-surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:var(--s3);
+  box-shadow:var(--shadow-sm);
+  transition:var(--transition);
+  cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.post-card:hover{
+  border-color:var(--border-active);
+  box-shadow:var(--shadow-glow);
+  transform:translateY(-1px);
+}
+.post-card.favorited{border-color:rgba(234,67,53,0.4)}
+.post-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s2)}
+.day-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:100px;
+  background:var(--grad-subtle);border:1px solid var(--border-active);
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:600;
+  color:var(--text-brand);
+}
+.post-actions{display:flex;gap:4px}
+.post-action-btn{
+  width:32px;height:32px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);transition:var(--transition);
+  min-height:32px;
+}
+.post-action-btn:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.post-action-btn.active{color:var(--text-brand)}
+.post-title{
+  font-family:var(--font-head);font-size:var(--fs-head);
+  font-weight:700;line-height:1.3;margin-bottom:var(--s1);
+}
+.post-hook{
+  font-size:var(--fs-body);color:var(--text-secondary);
+  line-height:1.6;margin-bottom:var(--s2);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.post-meta{
+  display:flex;align-items:center;gap:var(--s2);
+  border-top:1px solid var(--border);padding-top:var(--s2);
+}
+.topic-tag{
+  display:inline-flex;align-items:center;
+  padding:2px 8px;border-radius:100px;
+  background:rgba(234,67,53,0.1);
+  color:var(--text-brand);font-size:var(--fs-sm);
+  font-family:var(--font-head);font-weight:500;
+}
+.post-date{font-size:var(--fs-sm);color:var(--text-muted);margin-left:auto}
+.copy-btn{
+  min-height:44px;padding:0 var(--s2);
+  border-radius:var(--radius-sm);
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:600;
+  color:var(--text-secondary);
+  display:flex;align-items:center;gap:6px;
+  transition:var(--transition);margin-left:auto;
+}
+.copy-btn:hover{border-color:var(--border-active);color:var(--text-brand);background:var(--brand-glow)}
+.copy-btn.copied{background:rgba(52,199,89,0.1);border-color:rgba(52,199,89,0.3);color:#34c759}
+
+/* ============================================================
+   POST DETAIL MODAL
+   ============================================================ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  align-items:flex-end;justify-content:center;
+  padding-bottom:var(--nav-h);
+}
+.modal-overlay.open{display:flex;animation:overlayIn .2s ease}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{
+  width:100%;max-width:680px;max-height:88vh;
+  background:var(--bg-surface);
+  border-radius:var(--radius-xl) var(--radius-xl) 0 0;
+  border:1px solid var(--border);
+  border-bottom:none;
+  box-shadow:var(--shadow-lg);
+  display:flex;flex-direction:column;
+  animation:sheetUp .3s cubic-bezier(0.4,0,0.2,1);
+  overflow:hidden;
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{
+  width:40px;height:4px;border-radius:100px;
+  background:rgba(255,255,255,0.15);
+  margin:var(--s2) auto var(--s1);flex-shrink:0;
+}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--s3) var(--s2);flex-shrink:0;
+  border-bottom:1px solid var(--border);
+}
+.modal-title{font-family:var(--font-head);font-size:var(--fs-head);font-weight:700}
+.modal-close{
+  width:32px;height:32px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);background:var(--bg-elevated);
+  transition:var(--transition);
+}
+.modal-close:hover{color:var(--text-primary)}
+.modal-body{overflow-y:auto;padding:var(--s3);flex:1}
+.modal-body::-webkit-scrollbar{width:0}
+
+/* Post sections */
+.post-section{margin-bottom:var(--s3)}
+.post-section-label{
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:700;
+  color:var(--text-brand);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:var(--s1);display:flex;align-items:center;gap:6px;
+}
+.post-section-label::before{
+  content:'';display:block;width:3px;height:14px;
+  border-radius:2px;background:var(--grad);
+}
+.post-section-text{
+  font-size:var(--fs-body);color:var(--text-secondary);
+  line-height:1.75;
+}
+.post-section-text strong{color:var(--text-primary)}
+
+/* Image prompt block */
+.img-prompt-block{
+  background:var(--bg-elevated);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:var(--s2);
+  font-size:var(--fs-sm);color:var(--text-secondary);
+  line-height:1.7;font-style:italic;
+  position:relative;
+}
+.img-prompt-label{
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:700;
+  color:var(--text-brand);margin-bottom:var(--s1);
+  display:flex;align-items:center;gap:6px;
+}
+.cta-block{
+  background:var(--grad-subtle);border:1px solid var(--border-active);
+  border-radius:var(--radius-md);padding:var(--s2);
+  font-size:var(--fs-body);color:var(--text-primary);line-height:1.6;
+}
+.modal-footer{
+  padding:var(--s2) var(--s3) var(--s3);
+  border-top:1px solid var(--border);
+  display:flex;gap:var(--s1);flex-shrink:0;
+}
+.btn-primary{
+  flex:1;height:44px;border-radius:var(--radius-md);
+  background:var(--grad);color:#fff;
+  font-family:var(--font-head);font-size:var(--fs-body);font-weight:700;
+  box-shadow:var(--shadow-glow);transition:var(--transition);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-primary:hover{opacity:0.9;transform:translateY(-1px)}
+.btn-secondary{
+  height:44px;padding:0 var(--s2);border-radius:var(--radius-md);
+  background:var(--bg-elevated);border:1px solid var(--border);
+  color:var(--text-secondary);
+  font-family:var(--font-head);font-size:var(--fs-body);font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:var(--transition);
+}
+.btn-secondary:hover{border-color:var(--border-active);color:var(--text-brand)}
+
+/* ============================================================
+   IMAGE PROMPTS PAGE
+   ============================================================ */
+.prompt-grid{
+  display:grid;grid-template-columns:1fr;gap:var(--s2);
+  padding:var(--s2) var(--s2) var(--s3);
+  max-width:680px;margin:0 auto;width:100%;
+}
+.prompt-card{
+  background:var(--bg-surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:var(--s3);
+  box-shadow:var(--shadow-sm);transition:var(--transition);
+}
+.prompt-card:hover{border-color:var(--border-active);box-shadow:var(--shadow-glow)}
+.prompt-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s1)}
+.prompt-day{
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:700;
+  color:var(--text-brand);
+}
+.prompt-text{
+  font-size:var(--fs-sm);color:var(--text-secondary);
+  line-height:1.7;font-style:italic;
+}
+
+/* ============================================================
+   ABOUT PAGE
+   ============================================================ */
+.about-hero{
+  padding:var(--s3) var(--s2) var(--s2);
+  max-width:680px;margin:0 auto;width:100%;
+}
+.about-card{
+  background:var(--bg-surface);border:1px solid var(--border);
+  border-radius:var(--radius-xl);padding:var(--s4);
+  box-shadow:var(--shadow-md);position:relative;overflow:hidden;
+}
+.about-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--grad);
+}
+.about-avatar{
+  width:72px;height:72px;border-radius:var(--radius-lg);
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin-bottom:var(--s3);
+  box-shadow:var(--shadow-glow);
+}
+.about-name{
+  font-family:var(--font-head);font-size:var(--fs-xl);
+  font-weight:700;margin-bottom:4px;
+}
+.about-role{
+  font-size:var(--fs-body);color:var(--text-brand);
+  margin-bottom:var(--s3);
+}
+.about-bio{
+  font-size:var(--fs-body);color:var(--text-secondary);
+  line-height:1.75;margin-bottom:var(--s3);
+}
+.about-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);
+  margin-bottom:var(--s3);
+}
+.about-social{display:flex;flex-direction:column;gap:var(--s1)}
+.social-link{
+  display:flex;align-items:center;gap:var(--s2);
+  padding:var(--s2) var(--s2);border-radius:var(--radius-md);
+  background:var(--bg-elevated);border:1px solid var(--border);
+  min-height:44px;transition:var(--transition);
+  font-family:var(--font-head);font-size:var(--fs-body);font-weight:500;
+}
+.social-link:hover{border-color:var(--border-active);background:var(--brand-glow)}
+.social-icon{
+  width:32px;height:32px;border-radius:var(--radius-sm);
+  background:var(--grad-subtle);border:1px solid var(--border-active);
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+}
+
+/* ============================================================
+   SETTINGS PAGE
+   ============================================================ */
+.settings-list{
+  display:flex;flex-direction:column;gap:var(--s1);
+  padding:var(--s2) var(--s2) var(--s3);
+  max-width:680px;margin:0 auto;width:100%;
+}
+.settings-section-title{
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:700;
+  color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;
+  padding:var(--s2) 0 var(--s1);
+}
+.setting-row{
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:52px;padding:0 var(--s2);
+  background:var(--bg-surface);border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  transition:var(--transition);
+}
+.setting-row:hover{border-color:var(--border-active)}
+.setting-label{
+  font-family:var(--font-head);font-size:var(--fs-body);font-weight:500;
+}
+.setting-desc{font-size:var(--fs-sm);color:var(--text-muted);margin-top:2px}
+
+/* Toggle */
+.toggle{
+  position:relative;width:44px;height:26px;flex-shrink:0;
+}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{
+  position:absolute;inset:0;border-radius:100px;
+  background:rgba(255,255,255,0.1);border:1px solid var(--border);
+  transition:var(--transition);cursor:pointer;
+}
+.toggle input:checked~.toggle-track{background:var(--brand-start);border-color:var(--brand-start)}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;box-shadow:var(--shadow-sm);
+  transition:var(--transition);pointer-events:none;
+}
+.toggle input:checked~.toggle-thumb{left:21px}
+
+/* Install button */
+.install-btn{
+  width:100%;min-height:52px;border-radius:var(--radius-md);
+  background:var(--grad);color:#fff;
+  font-family:var(--font-head);font-size:var(--fs-body);font-weight:700;
+  box-shadow:var(--shadow-glow);
+  display:flex;align-items:center;justify-content:center;gap:var(--s1);
+  transition:var(--transition);
+}
+.install-btn:hover{opacity:.9;transform:translateY(-1px)}
+.install-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ============================================================
+   BOTTOM NAVIGATION
+   ============================================================ */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:150;
+  height:var(--nav-h);
+  background:rgba(10,10,13,0.92);
+  backdrop-filter:blur(24px) saturate(200%);
+  -webkit-backdrop-filter:blur(24px) saturate(200%);
+  border-top:1px solid var(--border);
+  display:flex;align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:4px;cursor:pointer;
+  position:relative;transition:var(--transition);
+  border:none;background:transparent;
+  padding:var(--s1);min-height:44px;
+}
+.nav-item::before{
+  content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);
+  width:0;height:2px;border-radius:0 0 4px 4px;
+  background:var(--grad);
+  transition:width var(--transition);
+}
+.nav-item.active::before{width:32px}
+.nav-icon-wrap{
+  width:36px;height:24px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  transition:var(--transition);
+}
+.nav-item.active .nav-icon-wrap{
+  background:rgba(234,67,53,0.18);
+}
+.nav-item svg{
+  width:20px;height:20px;
+  stroke:var(--text-muted);transition:var(--transition);
+}
+.nav-item.active svg{stroke:var(--text-brand)}
+.nav-label{
+  font-family:var(--font-head);font-size:10px;font-weight:600;
+  color:var(--text-muted);transition:var(--transition);letter-spacing:.02em;
+}
+.nav-item.active .nav-label{color:var(--text-brand)}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-container{
+  position:fixed;top:var(--s3);left:50%;transform:translateX(-50%);
+  z-index:300;display:flex;flex-direction:column;gap:var(--s1);
+  pointer-events:none;width:calc(100% - var(--s4));max-width:380px;
+}
+.toast{
+  background:var(--bg-elevated);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:var(--s2) var(--s3);
+  box-shadow:var(--shadow-lg);
+  font-family:var(--font-head);font-size:var(--fs-body);font-weight:500;
+  display:flex;align-items:center;gap:var(--s1);
+  animation:toastIn .3s cubic-bezier(.4,0,.2,1);
+  pointer-events:all;
+}
+.toast.success{border-color:rgba(52,199,89,0.3);color:#34c759}
+.toast.error{border-color:var(--border-active);color:var(--text-brand)}
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-16px)}}
+.toast.out{animation:toastOut .2s ease forwards}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:var(--s6) var(--s3);text-align:center;
+  gap:var(--s2);flex:1;
+}
+.empty-icon{
+  font-size:48px;margin-bottom:var(--s1);
+  filter:grayscale(0.3);
+}
+.empty-title{font-family:var(--font-head);font-size:var(--fs-head);font-weight:700}
+.empty-desc{font-size:var(--fs-body);color:var(--text-muted);max-width:280px;line-height:1.6}
+
+/* ============================================================
+   SKELETON LOADER
+   ============================================================ */
+.skeleton{
+  background:linear-gradient(90deg,var(--bg-elevated) 25%,var(--bg-overlay) 50%,var(--bg-elevated) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:var(--radius-sm);
+}
+@keyframes shimmer{to{background-position:-200% 0}}
+
+/* ============================================================
+   LOAD MORE BUTTON
+   ============================================================ */
+.load-more-wrap{
+  display:flex;justify-content:center;
+  padding:var(--s2) var(--s2) var(--s4);
+  max-width:680px;margin:0 auto;width:100%;
+}
+.load-more-btn{
+  height:44px;padding:0 var(--s4);border-radius:var(--radius-md);
+  background:var(--bg-surface);border:1px solid var(--border);
+  font-family:var(--font-head);font-size:var(--fs-body);font-weight:600;
+  color:var(--text-secondary);transition:var(--transition);
+}
+.load-more-btn:hover{border-color:var(--border-active);color:var(--text-brand)}
+
+/* ============================================================
+   CLEAN POST PREVIEW (modal body)
+   ============================================================ */
+.post-preview-wrap{
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:var(--s3);
+  margin-bottom:var(--s2);
+}
+.post-preview-author{
+  display:flex;align-items:center;gap:var(--s2);
+  margin-bottom:var(--s3);
+  padding-bottom:var(--s2);
+  border-bottom:1px solid var(--border);
+}
+.post-preview-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+  box-shadow:var(--shadow-glow);
+}
+.post-preview-name{
+  font-family:var(--font-head);font-size:var(--fs-body);
+  font-weight:700;color:var(--text-primary);
+}
+.post-preview-handle{
+  font-size:var(--fs-sm);color:var(--text-muted);margin-top:2px;
+}
+.post-preview-body{display:flex;flex-direction:column;gap:var(--s2)}
+.post-preview-line{
+  font-size:var(--fs-body);color:var(--text-secondary);
+  line-height:1.75;
+}
+.hook-line{
+  font-size:var(--fs-head);font-weight:600;
+  color:var(--text-primary);
+  font-family:var(--font-head);
+  line-height:1.4;
+}
+.cta-line{
+  color:var(--text-brand);font-weight:500;
+  font-family:var(--font-head);
+}
+.post-preview-tags{
+  font-size:var(--fs-sm);color:var(--text-muted);
+  line-height:1.6;
+}
+
+/* Image prompt collapsible */
+.img-prompt-section{margin-top:var(--s1)}
+.img-prompt-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--s2);border-radius:var(--radius-md);
+  background:var(--bg-elevated);border:1px solid var(--border);
+  cursor:pointer;min-height:44px;
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:600;
+  color:var(--text-secondary);transition:var(--transition);
+}
+.img-prompt-toggle:hover{border-color:var(--border-active);color:var(--text-brand)}
+.img-prompt-toggle svg{transition:transform var(--transition);flex-shrink:0}
+.img-prompt-block{
+  margin-top:4px;
+  background:var(--bg-elevated);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:var(--s2);
+  font-size:var(--fs-sm);color:var(--text-secondary);
+  line-height:1.7;font-style:italic;
+}
+.copy-prompt-inline{
+  display:block;margin-top:var(--s2);
+  height:36px;padding:0 var(--s2);border-radius:var(--radius-sm);
+  background:var(--bg-overlay);border:1px solid var(--border);
+  font-family:var(--font-head);font-size:var(--fs-sm);font-weight:600;
+  color:var(--text-secondary);transition:var(--transition);
+  cursor:pointer;
+}
+.copy-prompt-inline:hover{border-color:var(--border-active);color:var(--text-brand)}
+
+/* Responsive */
+@media(min-width:640px){
+  .prompt-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-grid{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" id="modalClose" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="modalFavorite">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Favorite
+      </button>
+      <button class="btn-primary" id="modalCopy">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy Post
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- APP HEADER -->
+<header class="app-header" id="appHeader">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">⚡</div>
+      <span class="brand-name">n8n·edu</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="searchToggleBtn" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- PAGES -->
+
+<!-- PAGE: DASHBOARD -->
+<main class="page active" id="page-dashboard">
+  <div class="dash-hero">
+    <div class="streak-card">
+      <div class="streak-top">
+        <div>
+          <div class="streak-label">2026 Learning Streak</div>
+          <div class="streak-num" id="dashDayNum">0</div>
+          <div class="streak-sub">days of n8n mastery</div>
+        </div>
+        <div style="text-align:right">
+          <div class="streak-label">Progress</div>
+          <div class="streak-num" id="dashPercent">0%</div>
+          <div class="streak-sub">of 365 posts</div>
+        </div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="dashProgressBar" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-tile">
+        <div class="stat-val" id="dashFavCount">0</div>
+        <div class="stat-lbl">Favorites</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-val" id="dashReadCount">0</div>
+        <div class="stat-lbl">Read</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-val">365</div>
+        <div class="stat-lbl">Total Posts</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div class="section-title">Recent Posts</div>
+    <button class="see-all-btn" onclick="switchPage('posts')">See All →</button>
+  </div>
+  <div class="posts-list" id="dashRecentPosts"></div>
+</main>
+
+<!-- PAGE: POSTS -->
+<main class="page" id="page-posts">
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" class="search-input" id="searchInput" placeholder="Search posts, topics, keywords…" aria-label="Search posts">
+      <div class="search-glow" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="filter-row" id="filterRow" role="group" aria-label="Filter by topic"></div>
+  <div class="posts-list" id="postsList"></div>
+  <div class="load-more-wrap">
+    <button class="load-more-btn" id="loadMoreBtn" aria-label="Load more posts">Load More Posts</button>
+  </div>
+</main>
+
+<!-- PAGE: IMAGE PROMPTS -->
+<main class="page" id="page-prompts">
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" class="search-input" id="promptSearchInput" placeholder="Search image prompts…" aria-label="Search prompts">
+      <div class="search-glow" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="prompt-grid" id="promptGrid"></div>
+</main>
+
+<!-- PAGE: ABOUT -->
+<main class="page" id="page-about">
+  <div class="about-hero">
+    <div class="about-card">
+      <div class="about-avatar" aria-hidden="true">⚙️</div>
+      <div class="about-name">Christechva</div>
+      <div class="about-role">Senior n8n Automation Engineer · Workflow Architect</div>
+      <div class="about-bio">
+        I help businesses eliminate manual bottlenecks and scale intelligently through custom n8n node development, advanced API integrations, and event-driven automation systems. This 365-day content series is my commitment to raising the standard of automation education worldwide.
+      </div>
+      <div class="about-stats">
+        <div class="stat-tile"><div class="stat-val">5+</div><div class="stat-lbl">Years n8n</div></div>
+        <div class="stat-tile"><div class="stat-val">200+</div><div class="stat-lbl">Workflows</div></div>
+        <div class="stat-tile"><div class="stat-val">365</div><div class="stat-lbl">Posts 2026</div></div>
+      </div>
+      <div class="about-social">
+        <div class="social-link">
+          <div class="social-icon">🌐</div>
+          <span>christechva.com</span>
+        </div>
+        <div class="social-link">
+          <div class="social-icon">💼</div>
+          <span>LinkedIn · Christechva</span>
+        </div>
+        <div class="social-link">
+          <div class="social-icon">🐦</div>
+          <span>@christechva</span>
+        </div>
+        <div class="social-link">
+          <div class="social-icon">▶️</div>
+          <span>YouTube · Christechva Automation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- PAGE: SETTINGS -->
+<main class="page" id="page-settings">
+  <div class="settings-list">
+    <div class="settings-section-title">App</div>
+    <button class="install-btn" id="installBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Install App (Offline Access)
+    </button>
+
+    <div class="settings-section-title" style="margin-top:var(--s2)">Preferences</div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">Notifications</div>
+        <div class="setting-desc">Daily post reminders</div>
+      </div>
+      <label class="toggle" aria-label="Toggle notifications">
+        <input type="checkbox" id="notifToggle" onchange="saveSetting('notif',this.checked)">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">Auto-mark as Read</div>
+        <div class="setting-desc">Mark posts read when opened</div>
+      </div>
+      <label class="toggle" aria-label="Toggle auto-read">
+        <input type="checkbox" id="autoReadToggle" checked onchange="saveSetting('autoRead',this.checked)">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">Compact View</div>
+        <div class="setting-desc">Show more posts per screen</div>
+      </div>
+      <label class="toggle" aria-label="Toggle compact view">
+        <input type="checkbox" id="compactToggle" onchange="saveSetting('compact',this.checked)">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+
+    <div class="settings-section-title" style="margin-top:var(--s2)">Data</div>
+
+    <div class="setting-row" style="cursor:pointer" onclick="clearFavorites()">
+      <div>
+        <div class="setting-label" style="color:var(--text-brand)">Clear Favorites</div>
+        <div class="setting-desc">Remove all saved favorites</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+    </div>
+
+    <div class="setting-row" style="cursor:pointer" onclick="clearReadHistory()">
+      <div>
+        <div class="setting-label" style="color:var(--text-brand)">Clear Read History</div>
+        <div class="setting-desc">Reset progress tracking</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+    </div>
+
+    <div class="settings-section-title" style="margin-top:var(--s2)">About</div>
+    <div class="setting-row">
+      <div class="setting-label">Version</div>
+      <div style="font-size:var(--fs-sm);color:var(--text-muted);font-family:var(--font-head)">2026.1.0</div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label">Content</div>
+      <div style="font-size:var(--fs-sm);color:var(--text-muted);font-family:var(--font-head)">365 posts · Mar–Dec 2026</div>
+    </div>
+  </div>
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+  <button class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </div>
+    <span class="nav-label">Dashboard</span>
+  </button>
+  <button class="nav-item" data-page="posts" onclick="switchPage('posts')">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    </div>
+    <span class="nav-label">365 Posts</span>
+  </button>
+  <button class="nav-item" data-page="prompts" onclick="switchPage('prompts')">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </div>
+    <span class="nav-label">Prompts</span>
+  </button>
+  <button class="nav-item" data-page="about" onclick="switchPage('about')">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <span class="nav-label">About</span>
+  </button>
+  <button class="nav-item" data-page="settings" onclick="switchPage('settings')">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+    <span class="nav-label">Settings</span>
+  </button>
+</nav>
+
+<script>
+/* ============================================================
+   MANIFEST — injected inline as blob
+   ============================================================ */
+(function(){
+  const manifest = {
+    name:"Christechva · n8n Node Mastery 2026",
+    short_name:"n8n.edu",
+    description:"365 days of custom n8n node development education",
+    start_url:"./",
+    display:"standalone",
+    background_color:"#0a0a0d",
+    theme_color:"#0f0f12",
+    orientation:"portrait",
+    icons:[
+      {src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%23ea4335'/%3E%3Ctext x='50%25' y='55%25' font-size='100' text-anchor='middle' dominant-baseline='middle'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"},
+      {src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23ea4335'/%3E%3Ctext x='50%25' y='55%25' font-size='280' text-anchor='middle' dominant-baseline='middle'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E",sizes:"512x512",type:"image/svg+xml"}
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  document.getElementById('manifest-placeholder').href = URL.createObjectURL(blob);
+})();
+
+/* ============================================================
+   SERVICE WORKER — inline registration
+   ============================================================ */
+if('serviceWorker' in navigator){
+  const swCode = `
+const CACHE = 'n8n-edu-v1';
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+    if(res.status===200){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}
+    return res;
+  }).catch(()=>caches.match('./'))));
+});`;
+  const blob = new Blob([swCode],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+
+/* ============================================================
+   DATA — 365 POSTS (March 25 → December 30, 2026)
+   ============================================================ */
+const TOPICS = [
+  'Automation Mindset','Real Stories','Business Value','Custom Nodes','Error Handling',
+  'API Integration','Webhooks','Data Transform','Authentication','Triggers',
+  'Performance','Security','Testing','Deployment','Sub-workflows',
+  'Workflow Design','Team & Ops','Scaling','Getting Started','Community'
+];
+
+const HOOKS = [
+  "A client called me at 9AM asking why 200 orders weren't processed overnight. The automation ran. It just never told anyone it failed.",
+  "I used to spend every Monday morning fixing things that broke over the weekend. Now my automations fix themselves. Here's what changed.",
+  "Most people think automation saves time. The real value is something nobody talks about.",
+  "A founder told me: 'I hired 3 people to do what you automated in a week.' That week changed how I think about work.",
+  "The scariest automation mistake isn't writing bad code. It's not knowing your code is bad.",
+  "Here's the honest truth about n8n that the tutorials don't tell you.",
+  "I've built over 200 workflows. The ones that failed all had one thing in common.",
+  "Your business is leaking money right now. Not from bad sales — from repetitive tasks done manually every single day.",
+  "The best automation I ever built is one my client never thinks about. That's the whole point.",
+  "A marketing manager told me she spent 3 hours every Friday on the same report. I automated it in 45 minutes. She cried.",
+  "If your automation only works when everything goes right, you don't have an automation. You have a liability.",
+  "There's a version of your business where your team does zero copy-paste work. n8n is how you get there.",
+  "I got paged at 3AM once because a workflow silently failed. I never let that happen again.",
+  "Every business I've worked with has the same problem. It's just wearing different clothes.",
+  "The gap between a basic n8n workflow and a professional one isn't the code. It's the thinking.",
+  "Someone asked me: 'Is n8n really worth learning?' I showed them their competitor's job listings. They signed up that day.",
+  "Good automation is invisible. Bad automation is a new job — for you.",
+  "I once saved a team of 5 from doing 4 hours of daily manual work. The ROI paid for itself in 2 weeks.",
+  "The moment I realized n8n was different: I connected 6 tools in one afternoon that a dev team said would take 2 weeks.",
+  "Stop building workflows that work. Start building workflows that work under pressure.",
+  "An operations manager showed me her team's daily checklist. Every item on it could be automated. Every single one.",
+  "The question isn't whether your business needs automation. It's how much it's costing you not to have it.",
+  "I built a custom node once that saved a client $4,000 a month in API costs. It took 3 hours.",
+  "Most automation breaks at the edges — when the data is weird, the API is slow, or the process changes.",
+  "n8n is not just a developer tool. It's a business decision.",
+  "The best investment a small team can make right now isn't hiring. It's automating work that doesn't need a human.",
+  "I've reviewed 50+ n8n workflows built by other developers. The same 5 mistakes show up in almost all of them.",
+  "When your workflow fails silently, it's not just a technical problem. It's a trust problem.",
+  "Automation isn't about replacing people. It's about giving people back their time for work that actually matters.",
+  "A well-built automation is like a great employee. Shows up every day, never complains, always follows the process."
+];
+
+const PROBLEMS = [
+  "A small e-commerce team was manually copying orders from their website into their shipping system. Two people. Three hours a day. Every day. They thought this was just 'how business works.' It isn't.",
+  "A startup was sending welcome emails to new users — but only when someone remembered to do it. Some users got it on day 1. Others waited a week. The experience was inconsistent, and it was quietly hurting retention.",
+  "An agency was manually pulling reports from three different tools every Friday, combining them in a spreadsheet, then sending them to clients. Half a day. Every single week. Times 52 weeks a year.",
+  "A sales team was getting leads from a contact form — but those leads were just sitting in an email inbox. No one assigned them. No one followed up automatically. Deals went cold before anyone responded.",
+  "A SaaS company had customer data in five different systems. When something changed in one place, someone had to manually update the other four. That someone was always behind. The data was always slightly wrong.",
+  "A founder was approving expense reports by replying to emails. No system. No record. No visibility. Just an overflowing inbox and the constant fear of missing something important.",
+  "A support team was copying customer complaints from email into their project management tool by hand. Ninety minutes a day of pure data entry — before they could even start solving the actual problems.",
+  "A marketing team was manually posting the same content across LinkedIn, Twitter, and their blog every week. Different formats. Different schedules. Always a little different from what was actually planned.",
+  "An ops team automated their invoicing — but forgot to add error handling. When the payment API went down for 2 hours, 40 invoices were silently skipped. They found out a week later during reconciliation.",
+  "A business owner was manually checking whether a Stripe payment came in before fulfilling each order. Stripe has webhooks that do this automatically. This person just didn't know that yet.",
+  "A developer built a clean n8n workflow for a client. It worked perfectly in testing. In production, it hit an API rate limit, failed completely, and sent no notification. The client found out from their own customers.",
+  "A team lead was manually sending reminder messages in Slack every Monday. Copy. Paste. Change the date. Send. Repeat. 52 times a year. Every single one of those could have been automated from day one.",
+  "A freelancer was chasing invoice payments by sending follow-up emails by hand. Some clients got three reminders. Some got none. It depended on how overwhelmed the freelancer was that week. Revenue was unpredictable.",
+  "A recruiter was copying candidate details from email into a spreadsheet into a CRM — three systems, all manual. By the time good candidates made it through, they had already accepted other offers.",
+  "An e-commerce store had a returns process that required the customer to email in, a staff member to read it, manually check the order, issue the refund, and update the spreadsheet. Eight steps. All human. All slow.",
+  "A consulting firm was generating proposals by copying a template, filling in the client name, swapping out the numbers, and sending. Every proposal took 45 minutes. They were sending 20 a month.",
+  "A product team was tracking feature requests from emails, support tickets, and Slack messages — all manually. Three channels. No system. Good ideas got lost constantly. The best ones especially.",
+  "A nonprofit tracked volunteer sign-ups in a shared Google Sheet. Rows got deleted. Columns shifted. Data was duplicated. Nobody fully trusted it — but everyone kept using it because they had nothing else.",
+  "A logistics company had drivers reporting delivery status via WhatsApp. A coordinator read every message and updated a spreadsheet. The spreadsheet was always two hours behind what was actually happening.",
+  "A digital agency had their client onboarding documented in a Google Doc — a checklist of 22 steps. Every new client, a project manager manually worked through it. Some steps were always missed."
+];
+
+const EDUCATIONS = [
+  "In n8n, you can build a custom node — think of it like adding a new button to a remote control that doesn't exist yet. It connects to any tool, any API, any internal system. You build it once and use it in every workflow forever.",
+  "Error handling in automation means deciding: what should happen when something goes wrong? Without it, your workflow stops silently. With it, you get a notification, an automatic retry, and a clear record of exactly what failed and why.",
+  "A webhook is like a doorbell. Instead of you constantly checking if someone arrived, the visitor rings and you're told instantly. Most modern tools support webhooks. Your automations can react in real time — not on a delay.",
+  "Retry logic means: if the first attempt fails, try again automatically. Smart retry waits a little longer each time — 1 second, then 4, then 16. It handles temporary outages without any human involvement and without losing data.",
+  "Think of your automation as having a front door. Input validation means checking what's coming in before letting it through. Bad data stopped at the entry point means clean, reliable data everywhere downstream — no surprises later.",
+  "n8n credentials are like a secure key cabinet. Every connection to an external tool has its own key, stored safely, never visible in the workflow itself. Share the workflow with your team without ever sharing a password.",
+  "Sub-workflows in n8n are like departments in a company. Your main workflow is the manager. When it needs something done, it delegates to a specialist sub-workflow and waits for the result. Cleaner, reusable, easier to maintain.",
+  "Performance in automation means: can your workflow process 1,000 items almost as fast as 1 item? The answer should be yes. Running multiple tasks at the same time — in parallel — instead of one after another makes this possible.",
+  "Testing your automation means running it on purpose with safe, fake data to find what breaks before real data does. It's not extra work — it's what separates professionals from people who find out something's broken from a customer.",
+  "Deployment means moving your automation from test to live safely. A solid plan means if something breaks, you're back to normal in minutes — not panicking for hours trying to remember what changed.",
+  "In n8n, every piece of data moving through your workflow is called an 'item.' Understanding how items flow — one at a time, in batches, split and merged — is the foundation of building workflows that don't break under real conditions.",
+  "An API is how two software tools talk to each other. Think of it as a waiter: you say what you want, the waiter goes to the kitchen, and returns with exactly what you ordered. n8n speaks API fluently — for almost every tool you use.",
+  "Logging means keeping a clear record of what your automation did — not just whether it worked, but what it processed, how long it took, and what it returned. Good logs turn a 2-hour debugging nightmare into a 5-minute fix.",
+  "Workflow versioning means saving your automation before making changes. If an update breaks something, you restore the previous version immediately. No panic. No lost work. No explaining to clients why things stopped working.",
+  "A trigger is what starts your automation. Time-based triggers run on a schedule — every morning, every Monday. Event-based triggers react to something happening — a form submitted, a payment received, a file uploaded.",
+  "Data transformation is taking information in one shape and reshaping it for another system. Like translating from one language to another — same meaning, different format. n8n handles this without code for most real-world cases.",
+  "When you connect n8n to another app using OAuth, n8n handles the entire secure permission process for you. The result: your automation accesses the tool on your behalf, safely, without storing your password anywhere.",
+  "A circuit breaker in automation is a safety valve. If an external service keeps failing, instead of endlessly retrying, your workflow stops, returns a clean response, and alerts you. It protects everything downstream from the failure.",
+  "Idempotency means running the same automation twice gives the same result as running it once. Critical for scheduled tasks. Without it, a retry means duplicate emails sent, duplicate records created, duplicate charges processed.",
+  "Observability means knowing what's happening inside your automation system right now — which workflows are running, which are slow, which have errors. Without it, you find out about problems from customers. With it, you find out first."
+];
+
+const RESULTS = [
+  "The order copying was automated. Two people got 3 hours of their day back. Accuracy went from 94% to 100%. The business scaled without hiring anyone new.",
+  "Welcome emails went out instantly to every new user, every time, without fail. Onboarding completion improved. The team stopped worrying and started building.",
+  "Friday reports became automatic. The team got half their Friday back — every Friday. Clients got better, more consistent reports. Everyone was happier.",
+  "Leads from the form went directly into the CRM, were assigned instantly, and triggered automatic follow-ups. Response time dropped from 24 hours to 4 minutes.",
+  "One source of truth. When data changed anywhere, it updated everywhere automatically. The team stopped debating 'which version is right' and started trusting the system.",
+  "Expense approvals moved into a structured workflow with clear records, automatic notifications, and full audit trails. The founder's inbox went from chaos to clean.",
+  "Customer complaints flowed straight from email into the project tool, already organized and assigned. The support team started their day solving problems, not logging them.",
+  "Content was scheduled once and published everywhere automatically, on time, in the right format. The marketing team reclaimed 3 hours every single week.",
+  "Proper error handling meant: when the payment API went down, the workflow paused, retried automatically, and notified the team. No skipped invoices. No surprise discoveries.",
+  "Orders processed automatically the moment payment was confirmed. No manual checking. No delays. No errors. The business owner stopped thinking about it entirely.",
+  "The workflow catches failures, waits the right amount of time, and retries automatically. It has never silently failed since. The client doesn't even think about it anymore.",
+  "One automation. Every Monday at 9AM, reminders go to exactly the right people with exactly the right message. The team lead starts Mondays doing real work instead of copy-paste.",
+  "Invoice follow-ups became a consistent system — Day 7, Day 14, Day 21, automatic and polite. Late payments dropped by 40%. The freelancer stopped chasing money and started focusing on work.",
+  "Candidates moved from email to spreadsheet to CRM automatically. The recruiter focused entirely on interviews and decisions. Time-to-hire dropped by half.",
+  "The returns process went from 8 manual steps to 2 human decisions. Everything in between was automated. Customers got faster resolutions. Staff felt less overwhelmed.",
+  "Proposal generation dropped from 45 minutes to 8 minutes. The consulting firm tripled their proposal volume without adding a single person to the team.",
+  "Feature requests from all three channels flowed into one place automatically, tagged and organized. Good ideas stopped getting lost. The product team started seeing patterns they'd missed for months.",
+  "A real system replaced the shared spreadsheet. Updates, additions, and deletions were automatic and reliable. Everyone trusted the data again — finally.",
+  "Driver status updates happened automatically. The coordinator shifted from data entry to decision-making. The spreadsheet became a dashboard. The whole operation got faster.",
+  "Onboarding became a workflow. All 22 steps tracked, assigned, and notified automatically. Nothing fell through the cracks. New clients had a better experience from day one."
+];
+
+const CTAS = [
+  "Follow Christechva for one real automation lesson every day in 2026. Plain English. Real stories. Patterns that work.",
+  "If any part of this sounded familiar, save this post. You'll want it when you're ready to fix it.",
+  "Share this with someone who's still doing this manually. They'll thank you.",
+  "Follow Christechva — 365 days of real automation lessons starting March 25, 2026.",
+  "What's the one task your team does manually every day that drives everyone a little crazy? Drop it in the comments.",
+  "If you want to explore what this would look like for your business, connect with Christechva on LinkedIn.",
+  "Tomorrow's post in this series takes this one step further. Follow so you don't miss it.",
+  "Tag someone on your team who needs to read this. You know who.",
+  "This is Day {DAY} of 365. Follow Christechva and catch every post in the series.",
+  "Every business has a version of this story. What's yours? Share it in the comments.",
+  "Repost this if it made you think about something in your own workflow. Someone in your network needs to see it.",
+  "Christechva posts one of these every single day in 2026. Follow and keep growing.",
+  "The automation that paid for itself in 2 weeks started with one question: what does your team do every day that a system could do instead?",
+  "Save this. Share it with your team. Then build it. That's the whole plan.",
+  "Follow Christechva — whether you're a business owner, a developer, or somewhere in between, this series is built for you."
+];
+
+const IMG_PROMPTS_BASE = [
+  "A calm organized office at night, one glowing screen showing a dashboard with green checkmarks, soft warm desk lamp, coffee mug, clean minimal workspace, cinematic photography, 16:9, ultra-realistic",
+  "A visual flowchart made of glowing light paths connecting colorful app icons, dark background, red-to-orange gradient energy between nodes, soft depth of field, 3D render, editorial style, 16:9",
+  "A person looking relieved at their laptop screen, automation workflow visible in background on a monitor, warm natural light, candid office moment, photorealistic, 16:9",
+  "Abstract visualization of data flowing between systems, streams of light in red and white moving through geometric shapes, dark void background, cinematic and clean, ultra HD, 16:9",
+  "A split image: left side shows a messy desk with sticky notes and spreadsheets, right side shows a clean organized dashboard on a modern monitor, dramatic contrast lighting, editorial photography",
+  "Close-up of hands typing on a keyboard, screen reflecting in glasses, n8n workflow visible on monitor in soft bokeh background, warm amber tones, ultra-realistic photography, 16:9",
+  "A chain of interconnected glowing gears representing automated business processes, red gradient colors, dark background, clean 3D render, symbolizing smooth operations without human input",
+  "A small business owner smiling at their phone, automation success notification visible on screen, warm café environment, natural light, candid and authentic, photorealistic, 16:9",
+  "An hourglass where the sand is replaced by glowing data streams, red and orange colors, dark background, time and automation concept, artistic 3D render, cinematic composition",
+  "A modern command center with multiple screens showing real-time automation dashboards, green status indicators everywhere, one person calmly overseeing everything, cinematic wide shot",
+  "A visual metaphor of dominoes falling automatically in sequence, each domino labeled with a business process step, dark background, red neon glow, slow-motion render style, 16:9",
+  "A developer's clean desk setup, dual monitors showing a workflow diagram and clean code, warm ambient lighting, authentic workspace photography, depth of field, 16:9",
+  "Abstract image of a safety net catching falling geometric shapes representing data errors, red and green glow, dark background, concept of reliability and error handling, 3D render",
+  "A business owner receiving a phone notification that says 'All tasks completed automatically', sitting in a sunlit café, relaxed expression, lifestyle photography, warm natural tones",
+  "A visual funnel where chaotic data inputs enter the top and perfectly organized outputs flow out the bottom, red to white gradient, dark minimal background, 3D editorial render",
+  "A clock face where the hands are replaced by automation workflow arrows, dark background, red and orange neon, concept of time saved through intelligent automation, 3D art",
+  "A diverse team collaborating around a table, screens showing workflow diagrams and dashboards, bright modern office, authentic teamwork photography, 16:9 wide angle, natural light",
+  "A single thread of red light connecting dozens of scattered glowing dots into one organized network, dark space background, cinematic, concept of integration and order from chaos",
+  "Before and after: left half shows a cluttered inbox with hundreds of unread emails, right half shows a clean automated pipeline dashboard, sharp dividing line, high contrast editorial",
+  "A person pressing a single button and watching a cascade of automated tasks complete on screens around them, expression of relief and confidence, warm futuristic environment, cinematic"
+];
+
+// Generate all 365 posts
+function generatePosts(){
+  const posts = [];
+  const startDate = new Date('2026-03-25');
+  
+  const topicCycles = [
+    {topic:'Automation Mindset', subtopics:['Why Most Automations Fail','The Automation That Changed Everything','What Automation Actually Costs You','The Real Value of Automation','When Automation Goes Wrong','The 3AM Problem','Automation vs Hiring','The Invisible Automation','Building for Real Life','What Your Business Is Missing']},
+    {topic:'Real Stories', subtopics:['The Order Processing Story','The Welcome Email Problem','The Friday Report Trap','The Cold Lead Problem','The 5-System Chaos','The Approval Inbox Crisis','The Data Entry Tax','The Content Copy-Paste Loop','The Silent Invoice Failure','The Manual Fulfillment Check']},
+    {topic:'Business Value', subtopics:['The ROI of Your First Automation','What Manual Work Actually Costs','Time You Can Never Get Back','The Scaling Wall','Why Small Teams Need Automation Most','The Competitive Gap','Automating the Boring Stuff','Revenue You Are Leaving Behind','The Hidden Payroll Waste','Building a Business That Runs Itself']},
+    {topic:'Custom Nodes', subtopics:['What a Custom Node Actually Is','When to Build Your Own Node','Connecting Any Tool You Want','The Node That Saved $4K a Month','Building Once Using Everywhere','Your First Custom Node','Nodes That Do More','Extending n8n Your Way','The Custom Node Advantage','When Built-In Nodes Are Not Enough']},
+    {topic:'Error Handling', subtopics:['When Silence Is the Worst Response','What Happens When It Breaks','The Retry That Saves Everything','Building Automations That Forgive Themselves','Notifications That Actually Help','The Error Message Problem','Recovering Gracefully','Never Lose Data Again','The Fallback Plan','Error Handling as a Feature']},
+    {topic:'API Integration', subtopics:['What an API Actually Is','Connecting Two Tools That Do Not Talk','The Rate Limit Surprise','Handling Downtime Gracefully','Getting Data From Anywhere','The Authentication Dance','Working With Real API Responses','Pagination Without Losing Your Mind','Keeping Integrations Healthy','When the API Changes']},
+    {topic:'Webhooks', subtopics:['What a Webhook Actually Is','Real-Time vs Scheduled — The Difference','The Doorbell Analogy','Reacting Instantly to Events','Connecting Forms to Workflows','The Payment Confirmation Story','Listening for What Matters','Webhook Security Basics','What to Do With Incoming Data','Building Event-Driven Systems']},
+    {topic:'Data Transform', subtopics:['Why Data Shape Matters','Translating Between Systems','Cleaning Messy Data','Merging Information From Multiple Sources','The Normalization Problem','Making Data Useful','Transforming Without Code','Mapping Fields Confidently','Handling Missing Data','Data Quality as a Business Problem']},
+    {topic:'Authentication', subtopics:['Keeping Credentials Safe','The Password You Never Share','Connecting With OAuth Simply','Managing Multiple Accounts','When Access Expires','Credential Hygiene for Teams','Single Sign-On Basics','The Security Audit Story','Rotating Access Keys','Authentication as Trust']},
+    {topic:'Triggers', subtopics:['What Starts Your Automation','Scheduled vs Event-Based Triggers','The Morning Report Trigger','Reacting to Form Submissions','Triggering From Payments','The File Upload Trigger','Time-Based Automation Patterns','Chaining Triggers Together','The Always-On Workflow','Choosing the Right Trigger']},
+    {topic:'Performance', subtopics:['Why Speed Matters in Automation','Processing 1000 Items Like 10','The Parallel Processing Advantage','When Your Workflow Gets Slow','Batching for Efficiency','Avoiding Timeouts','Memory and Large Data','The Benchmark Test','Optimizing for Real Volume','Performance as Reliability']},
+    {topic:'Security', subtopics:['The Automation Security Basics','What Should Never Be in a Workflow','Protecting Client Data','The Credential Audit','Who Has Access to What','Securing Webhooks','Encryption Without Complexity','The Compliance Checklist','Security Testing Your Workflows','Building Trust Through Security']},
+  ];
+
+  for(let i=0;i<365;i++){
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate()+i);
+    const dateStr = date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    
+    const cycleIndex = Math.floor(i/10) % topicCycles.length;
+    const cycle = topicCycles[cycleIndex];
+    const subIndex = i % 10;
+    const subtopic = cycle.subtopics[subIndex];
+    
+    const hi = i % HOOKS.length;
+    const pi = i % PROBLEMS.length;
+    const ei = i % EDUCATIONS.length;
+    const ri = i % RESULTS.length;
+    const ci = i % CTAS.length;
+    const imgI = i % IMG_PROMPTS_BASE.length;
+    
+    posts.push({
+      id: i+1,
+      day: i+1,
+      date: dateStr,
+      topic: cycle.topic,
+      subtopic: subtopic,
+      title: `Day ${i+1} — ${subtopic}`,
+      hook: HOOKS[hi],
+      problem: PROBLEMS[pi],
+      education: EDUCATIONS[ei],
+      result: RESULTS[ri],
+      cta: CTAS[ci].replace('Day '+String(Math.floor(Math.random()*20)+2), 'Day '+(i+2)),
+      imagePrompt: IMG_PROMPTS_BASE[imgI] + `, day ${i+1} style, unique composition variant ${i+1}`
+    });
+  }
+  return posts;
+}
+
+const ALL_POSTS = generatePosts();
+
+/* ============================================================
+   STATE & LOCALSTORAGE
+   ============================================================ */
+let state = {
+  favorites: JSON.parse(localStorage.getItem('n8n_fav')||'[]'),
+  read: JSON.parse(localStorage.getItem('n8n_read')||'[]'),
+  settings: JSON.parse(localStorage.getItem('n8n_settings')||'{"notif":false,"autoRead":true,"compact":false}'),
+  currentPage: 'dashboard',
+  postsOffset: 0,
+  postsPerLoad: 20,
+  searchQuery: '',
+  activeFilter: 'All',
+  openPost: null
+};
+
+function saveState(){
+  localStorage.setItem('n8n_fav', JSON.stringify(state.favorites));
+  localStorage.setItem('n8n_read', JSON.stringify(state.read));
+  localStorage.setItem('n8n_settings', JSON.stringify(state.settings));
+}
+
+function saveSetting(key, val){
+  state.settings[key] = val;
+  saveState();
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function showToast(msg, type='success'){
+  const wrap = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${type==='success'?'✓':'!'}</span> ${msg}`;
+  wrap.appendChild(t);
+  setTimeout(()=>{
+    t.classList.add('out');
+    setTimeout(()=>t.remove(), 250);
+  }, 2500);
+}
+
+/* ============================================================
+   PAGE NAVIGATION
+   ============================================================ */
+function switchPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.page===name);
+  });
+  state.currentPage = name;
+  window.scrollTo({top:0,behavior:'smooth'});
+  
+  if(name==='posts'){
+    state.postsOffset = 0;
+    state.searchQuery = '';
+    state.activeFilter = 'All';
+    document.getElementById('searchInput').value='';
+    renderFilters();
+    renderPosts();
+  }
+  if(name==='dashboard') renderDashboard();
+  if(name==='prompts') renderPrompts();
+}
+
+/* ============================================================
+   COPY TO CLIPBOARD
+   ============================================================ */
+function buildPostText(post){
+  const cta = post.cta.replace('{DAY}', post.day);
+  return `${post.hook}\n\n${post.problem}\n\n${post.education}\n\n${post.result}\n\n${cta}\n\n#n8n #automation #nocode #workflow #christechva #customnodes #n8ndeveloper`;
+}
+
+function buildImagePromptText(post){
+  return `🖼️ Image Prompt for Day ${post.day}:\n${post.imagePrompt}`;
+}
+
+function copyPost(post, btn){
+  const text = buildPostText(post);
+  
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast('Post copied to clipboard!');
+    if(btn){
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+      setTimeout(()=>{
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy`;
+      }, 2000);
+    }
+  }).catch(()=>showToast('Copy failed — try long-pressing','error'));
+}
+
+/* ============================================================
+   FAVORITE TOGGLE
+   ============================================================ */
+function toggleFavorite(id){
+  const idx = state.favorites.indexOf(id);
+  if(idx===-1) state.favorites.push(id);
+  else state.favorites.splice(idx,1);
+  saveState();
+  renderDashboardStats();
+  return idx===-1;
+}
+
+/* ============================================================
+   READ TRACKING
+   ============================================================ */
+function markRead(id){
+  if(!state.read.includes(id)){
+    state.read.push(id);
+    saveState();
+    renderDashboardStats();
+  }
+}
+
+/* ============================================================
+   POST CARD RENDER
+   ============================================================ */
+function renderPostCard(post){
+  const isFav = state.favorites.includes(post.id);
+  const isRead = state.read.includes(post.id);
+  const card = document.createElement('article');
+  card.className = `post-card${isFav?' favorited':''}`;
+  card.setAttribute('aria-label', `Day ${post.day}: ${post.subtopic}`);
+  card.innerHTML = `
+    <div class="post-card-top">
+      <span class="day-badge">Day ${post.day} · ${post.date}</span>
+      <div class="post-actions">
+        <button class="post-action-btn ${isFav?'active':''}" data-fav="${post.id}" aria-label="${isFav?'Remove from':'Add to'} favorites" title="Favorite">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="${isFav?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+    </div>
+    <h2 class="post-title">${post.subtopic}</h2>
+    <p class="post-hook">${post.hook}</p>
+    <div class="post-meta">
+      <span class="topic-tag">${post.topic}</span>
+      <button class="copy-btn" data-copy="${post.id}" aria-label="Copy post ${post.day}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+  `;
+  
+  // Click to open modal
+  card.addEventListener('click', e=>{
+    if(e.target.closest('[data-fav]')||e.target.closest('[data-copy]')) return;
+    openModal(post);
+  });
+  
+  // Favorite btn
+  card.querySelector('[data-fav]').addEventListener('click', e=>{
+    e.stopPropagation();
+    const added = toggleFavorite(post.id);
+    const btn = e.currentTarget;
+    btn.classList.toggle('active', added);
+    btn.setAttribute('aria-label', `${added?'Remove from':'Add to'} favorites`);
+    btn.querySelector('svg').setAttribute('fill', added?'currentColor':'none');
+    card.classList.toggle('favorited', added);
+    showToast(added?'Added to favorites':'Removed from favorites');
+  });
+  
+  // Copy btn
+  card.querySelector('[data-copy]').addEventListener('click', e=>{
+    e.stopPropagation();
+    copyPost(post, e.currentTarget);
+  });
+  
+  return card;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function openModal(post){
+  state.openPost = post;
+  if(state.settings.autoRead) markRead(post.id);
+  
+  document.getElementById('modalTitle').textContent = `Day ${post.day} — ${post.subtopic}`;
+  
+  const body = document.getElementById('modalBody');
+  body.innerHTML = `
+    <div class="post-preview-wrap">
+      <div class="post-preview-author">
+        <div class="post-preview-avatar">⚙️</div>
+        <div>
+          <div class="post-preview-name">Christechva</div>
+          <div class="post-preview-handle">n8n Automation Engineer · Day ${post.day} of 365</div>
+        </div>
+      </div>
+      <div class="post-preview-body">
+        <p class="post-preview-line hook-line">${post.hook}</p>
+        <p class="post-preview-line">${post.problem}</p>
+        <p class="post-preview-line">${post.education}</p>
+        <p class="post-preview-line">${post.result}</p>
+        <p class="post-preview-line cta-line">${post.cta.replace('{DAY}', post.day)}</p>
+        <p class="post-preview-tags">#n8n #automation #nocode #workflow #christechva #customnodes #n8ndeveloper</p>
+      </div>
+    </div>
+    <div class="img-prompt-section">
+      <div class="img-prompt-toggle" id="imgPromptToggle" onclick="toggleImgPrompt()">
+        <span>🖼️ Image Prompt</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="imgPromptChevron"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="img-prompt-block" id="imgPromptContent" style="display:none">${post.imagePrompt}
+        <button class="copy-prompt-inline" onclick="navigator.clipboard.writeText('${post.imagePrompt.replace(/'/g,"\\'")}').then(()=>showToast('Prompt copied!'))">Copy Prompt</button>
+      </div>
+    </div>
+  `;
+  
+  const isFav = state.favorites.includes(post.id);
+  const favBtn = document.getElementById('modalFavorite');
+  favBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="${isFav?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${isFav?'Favorited':'Favorite'}`;
+  
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  state.openPost = null;
+}
+
+window.toggleImgPrompt = function(){
+  const content = document.getElementById('imgPromptContent');
+  const chevron = document.getElementById('imgPromptChevron');
+  const open = content.style.display==='none';
+  content.style.display = open ? 'block' : 'none';
+  chevron.style.transform = open ? 'rotate(180deg)' : '';
+};
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e=>{
+  if(e.target===document.getElementById('modalOverlay')) closeModal();
+});
+document.getElementById('modalCopy').addEventListener('click', ()=>{
+  if(!state.openPost) return;
+  const text = buildPostText(state.openPost);
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast('Post copied — ready to paste! ✓');
+    const btn = document.getElementById('modalCopy');
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    setTimeout(()=>{
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Post`;
+    }, 2000);
+  }).catch(()=>showToast('Copy failed','error'));
+});
+document.getElementById('modalFavorite').addEventListener('click', ()=>{
+  if(!state.openPost) return;
+  const added = toggleFavorite(state.openPost.id);
+  const btn = document.getElementById('modalFavorite');
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="${added?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${added?'Favorited':'Favorite'}`;
+  showToast(added?'Added to favorites':'Removed from favorites');
+});
+
+/* ============================================================
+   DASHBOARD RENDER
+   ============================================================ */
+function renderDashboardStats(){
+  const day = ALL_POSTS.length;
+  const pct = Math.round((state.read.length/365)*100);
+  document.getElementById('dashDayNum').textContent = state.read.length;
+  document.getElementById('dashPercent').textContent = pct+'%';
+  document.getElementById('dashProgressBar').style.width = pct+'%';
+  document.getElementById('dashFavCount').textContent = state.favorites.length;
+  document.getElementById('dashReadCount').textContent = state.read.length;
+}
+
+function renderDashboard(){
+  renderDashboardStats();
+  const container = document.getElementById('dashRecentPosts');
+  container.innerHTML='';
+  ALL_POSTS.slice(0,5).forEach(p=>container.appendChild(renderPostCard(p)));
+}
+
+/* ============================================================
+   FILTER CHIPS
+   ============================================================ */
+function renderFilters(){
+  const row = document.getElementById('filterRow');
+  row.innerHTML='';
+  const topics = ['All', ...TOPICS];
+  topics.forEach(t=>{
+    const btn = document.createElement('button');
+    btn.className = `chip${t===state.activeFilter?' active':''}`;
+    btn.textContent = t;
+    btn.setAttribute('aria-pressed', t===state.activeFilter);
+    btn.addEventListener('click', ()=>{
+      state.activeFilter = t;
+      state.postsOffset = 0;
+      renderFilters();
+      renderPosts();
+    });
+    row.appendChild(btn);
+  });
+}
+
+/* ============================================================
+   POSTS LIST RENDER
+   ============================================================ */
+function getFilteredPosts(){
+  let posts = ALL_POSTS;
+  if(state.activeFilter!=='All') posts = posts.filter(p=>p.topic===state.activeFilter);
+  if(state.searchQuery){
+    const q = state.searchQuery.toLowerCase();
+    posts = posts.filter(p=>
+      p.subtopic.toLowerCase().includes(q) ||
+      p.hook.toLowerCase().includes(q) ||
+      p.topic.toLowerCase().includes(q) ||
+      p.problem.toLowerCase().includes(q)
+    );
+  }
+  return posts;
+}
+
+function renderPosts(append=false){
+  const filtered = getFilteredPosts();
+  const container = document.getElementById('postsList');
+  if(!append) container.innerHTML='';
+  
+  if(!filtered.length){
+    container.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No posts found</div><div class="empty-desc">Try a different search term or clear the filter.</div></div>`;
+    document.getElementById('loadMoreBtn').style.display='none';
+    return;
+  }
+  
+  const slice = filtered.slice(state.postsOffset, state.postsOffset+state.postsPerLoad);
+  slice.forEach(p=>container.appendChild(renderPostCard(p)));
+  state.postsOffset += state.postsPerLoad;
+  
+  const loadBtn = document.getElementById('loadMoreBtn');
+  loadBtn.style.display = state.postsOffset>=filtered.length ? 'none' : 'flex';
+}
+
+document.getElementById('loadMoreBtn').addEventListener('click', ()=>renderPosts(true));
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+let searchDebounce;
+document.getElementById('searchInput').addEventListener('input', e=>{
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(()=>{
+    state.searchQuery = e.target.value.trim();
+    state.postsOffset = 0;
+    renderPosts();
+  }, 300);
+});
+
+document.getElementById('promptSearchInput').addEventListener('input', e=>{
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(()=>renderPrompts(e.target.value.trim()), 300);
+});
+
+/* ============================================================
+   PROMPT GRID
+   ============================================================ */
+function renderPrompts(query=''){
+  const grid = document.getElementById('promptGrid');
+  grid.innerHTML='';
+  let posts = ALL_POSTS;
+  if(query) posts = posts.filter(p=>p.imagePrompt.toLowerCase().includes(query.toLowerCase())||p.subtopic.toLowerCase().includes(query.toLowerCase()));
+  
+  if(!posts.length){
+    grid.innerHTML=`<div class="empty-state"><div class="empty-icon">🖼️</div><div class="empty-title">No prompts found</div><div class="empty-desc">Try a different search term.</div></div>`;
+    return;
+  }
+  
+  posts.slice(0,60).forEach(p=>{
+    const card = document.createElement('div');
+    card.className='prompt-card';
+    card.innerHTML=`
+      <div class="prompt-top">
+        <span class="prompt-day">Day ${p.day} · ${p.topic}</span>
+        <button class="post-action-btn" aria-label="Copy prompt for day ${p.day}" onclick="copyPrompt(${p.id},this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <p class="prompt-text">${p.imagePrompt}</p>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+window.copyPrompt = function(id, btn){
+  const post = ALL_POSTS.find(p=>p.id===id);
+  if(!post) return;
+  navigator.clipboard.writeText(post.imagePrompt).then(()=>{
+    showToast('Image prompt copied!');
+  });
+};
+
+/* ============================================================
+   SETTINGS INIT
+   ============================================================ */
+function initSettings(){
+  document.getElementById('notifToggle').checked = !!state.settings.notif;
+  document.getElementById('autoReadToggle').checked = state.settings.autoRead!==false;
+  document.getElementById('compactToggle').checked = !!state.settings.compact;
+}
+
+window.clearFavorites = function(){
+  if(confirm('Clear all favorites?')){
+    state.favorites=[];
+    saveState();
+    showToast('Favorites cleared');
+    renderDashboardStats();
+  }
+};
+
+window.clearReadHistory = function(){
+  if(confirm('Clear all read history?')){
+    state.read=[];
+    saveState();
+    showToast('Read history cleared');
+    renderDashboardStats();
+  }
+};
+
+/* ============================================================
+   INSTALL PWA
+   ============================================================ */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').disabled = false;
+});
+
+document.getElementById('installBtn').addEventListener('click', async()=>{
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const {outcome} = await deferredPrompt.userChoice;
+    if(outcome==='accepted') showToast('App installed successfully! ✓');
+    deferredPrompt = null;
+  } else {
+    showToast('To install: use browser menu → "Add to Home Screen"');
+  }
+});
+
+window.addEventListener('appinstalled', ()=>{
+  showToast('n8n.edu installed! ✓');
+  deferredPrompt = null;
+});
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+   ============================================================ */
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') closeModal();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+initSettings();
+renderDashboard();
+renderFilters();
+
+// Eagerly pre-populate posts page in background
+setTimeout(()=>{
+  if(state.currentPage!=='posts'){
+    renderPosts();
+  }
+}, 500);
+</script>
+</body>
+</html>
